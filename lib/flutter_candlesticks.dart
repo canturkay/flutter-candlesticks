@@ -20,7 +20,8 @@ class OHLCVGraph extends StatefulWidget {
     this.fillBoxes = false,
     this.lowHighColor,
     this.volumeBarOpacity = 1.0,
-    this.barWidth
+    this.barWidth,
+    this.selectionColor = Colors.black
   })  : assert(data != null),
         super(key: key);
 
@@ -72,6 +73,9 @@ class OHLCVGraph extends StatefulWidget {
 
   /// Width for bars
   final double barWidth;
+
+  /// Color for selection line
+  final Color selectionColor;
 
   @override
   _OHLCVGraphState createState() => _OHLCVGraphState();
@@ -135,7 +139,8 @@ class _OHLCVGraphState extends State<OHLCVGraph> {
           lowHighColor: widget.lowHighColor,
               volumeBarOpacity: widget.volumeBarOpacity,
           barWidth: widget.barWidth,
-          touchPosition: touchPosition),
+          touchPosition: touchPosition,
+          selectionColor: widget.selectionColor),
         ),
       ),
     );
@@ -158,7 +163,8 @@ class _OHLCVPainter extends CustomPainter {
       @required this.lowHighColor,
       @required this.volumeBarOpacity,
       @required this.barWidth,
-      @required this.touchPosition});
+      @required this.touchPosition,
+      @required this.selectionColor});
 
   final List data;
   final double lineWidth;
@@ -176,6 +182,7 @@ class _OHLCVPainter extends CustomPainter {
   final double volumeBarOpacity;
   final double barWidth;
   final Offset touchPosition;
+  final Color selectionColor;
 
   double _min;
   double _max;
@@ -432,7 +439,8 @@ class _OHLCVPainter extends CustomPainter {
   int _getClosestTouchCandleIndex(Size size){
     double singleCandle = size.width/data.length;
     int candleIndex = touchPosition.dx~/singleCandle;
-
+    
+    return candleIndex;
   }
 
   @override
