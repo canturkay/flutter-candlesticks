@@ -250,8 +250,8 @@ class _OHLCVPainter extends CustomPainter {
 
     // Loop through all data
     for (int i = 0; i < data.length; i++) {
-      rectLeft = (i * rectWidth) + lineWidth / 2;
-      rectRight = ((i + 1) * rectWidth) - lineWidth / 2;
+      rectLeft = (i * width / data.length) + lineWidth / 2;
+      rectRight = rectLeft + rectWidth;
 
       double volumeBarTop = (height + volumeHeight) -
           (data[i]["volumeto"] * volumeNormalizer - lineWidth / 2);
