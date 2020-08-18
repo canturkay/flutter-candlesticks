@@ -97,24 +97,24 @@ class _OHLCVGraphState extends State<OHLCVGraph> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onLongPressStart: (d){
+      onTapDown: (d){
         setState(() {
           touchPosition =
               d.localPosition;
         });
       },
-      onLongPressEnd: (d){
-        setState(() {
-          touchPosition = null;
-        });
-      },
-      onPanStart: (d){
+      onPanUpdate: (d){
         setState(() {
           touchPosition =
               d.localPosition;
         });
       },
       onPanEnd: (d){
+        setState(() {
+          touchPosition = null;
+        });
+      },
+      onTapUp: (d){
         setState(() {
           touchPosition = null;
         });
@@ -427,7 +427,7 @@ class _OHLCVPainter extends CustomPainter {
     if (touchPosition != null){
       int candleIndex = _getClosestTouchCandleIndex(size);
 
-      rectLeft = (candleIndex * width / data.length);
+      rectLeft = (candleIndex * width / data.length) + barWidth/2;
       rectPaint
       ..color = selectionColor
       ..strokeWidth = 1.0;
