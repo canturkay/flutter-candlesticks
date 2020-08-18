@@ -17,7 +17,8 @@ class OHLCVGraph extends StatelessWidget {
     @required this.volumeProp,
     this.increaseColor = Colors.green,
     this.decreaseColor = Colors.red,
-    this.fillBoxes = false
+    this.fillBoxes = false,
+    this.lowHighColor
   })  : assert(data != null),
         super(key: key);
 
@@ -61,6 +62,9 @@ class OHLCVGraph extends StatelessWidget {
   /// Whether to fill or outline candleSticks
   final bool fillBoxes;
 
+  /// Color for low/high spread lines, increaseColor or decreaseColor by default
+  final Color lowHighColor;
+
   @override
   Widget build(BuildContext context) {
     return new LimitedBox(
@@ -79,7 +83,8 @@ class OHLCVGraph extends StatelessWidget {
             labelPrefix: labelPrefix,
             increaseColor: increaseColor,
             decreaseColor: decreaseColor,
-            fillBoxes: fillBoxes),
+            fillBoxes: fillBoxes,
+        lowHighColor: lowHighColor),
       ),
     );
   }
@@ -97,7 +102,8 @@ class _OHLCVPainter extends CustomPainter {
       @required this.labelPrefix,
       @required this.increaseColor,
       @required this.decreaseColor,
-      @required this.fillBoxes});
+      @required this.fillBoxes,
+      @required this.lowHighColor});
 
   final List data;
   final double lineWidth;
@@ -111,6 +117,7 @@ class _OHLCVPainter extends CustomPainter {
   final Color increaseColor;
   final Color decreaseColor;
   final bool fillBoxes;
+  final Color lowHighColor;
 
   double _min;
   double _max;
@@ -218,7 +225,7 @@ class _OHLCVPainter extends CustomPainter {
     }
 
     final double heightNormalizer = height / (_max - _min);
-    final double rectWidth = width / data.length;
+    final double rectWidth = width / data.length / 2;
 
     double rectLeft;
     double rectTop;
@@ -320,11 +327,11 @@ class _OHLCVPainter extends CustomPainter {
       canvas.drawLine(
           new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, rectBottom),
           new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, low),
-          rectPaint);
+          lowHighColor ?? rectPaint);
       canvas.drawLine(
           new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, rectTop),
           new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, high),
-          rectPaint);
+          lowHighColor ?? rectPaint);
     }
   }
 
