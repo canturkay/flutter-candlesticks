@@ -17,6 +17,7 @@ class OHLCVGraph extends StatelessWidget {
     @required this.volumeProp,
     this.increaseColor = Colors.green,
     this.decreaseColor = Colors.red,
+    this.fillBoxes = false
   })  : assert(data != null),
         super(key: key);
 
@@ -57,6 +58,9 @@ class OHLCVGraph extends StatelessWidget {
   /// Decrease color
   final Color decreaseColor;
 
+  /// Whether to fill or outline candleSticks
+  final bool fillBoxes;
+
   @override
   Widget build(BuildContext context) {
     return new LimitedBox(
@@ -74,7 +78,8 @@ class OHLCVGraph extends StatelessWidget {
             volumeProp: volumeProp,
             labelPrefix: labelPrefix,
             increaseColor: increaseColor,
-            decreaseColor: decreaseColor),
+            decreaseColor: decreaseColor,
+            fillBoxes: fillBoxes),
       ),
     );
   }
@@ -91,7 +96,8 @@ class _OHLCVPainter extends CustomPainter {
       @required this.volumeProp,
       @required this.labelPrefix,
       @required this.increaseColor,
-      @required this.decreaseColor});
+      @required this.decreaseColor,
+      @required this.fillBoxes});
 
   final List data;
   final double lineWidth;
@@ -104,6 +110,7 @@ class _OHLCVPainter extends CustomPainter {
   final double volumeProp;
   final Color increaseColor;
   final Color decreaseColor;
+  final bool fillBoxes;
 
   double _min;
   double _max;
@@ -236,15 +243,35 @@ class _OHLCVPainter extends CustomPainter {
         rectPaint = new Paint()
           ..color = decreaseColor
           ..strokeWidth = lineWidth;
+        if (fillBoxes){
+          Rect ocRect =
+          new Rect.fromLTRB(rectLeft, rectTop, rectRight, rectBottom);
+          canvas.drawRect(ocRect, rectPaint);
 
-        Rect ocRect =
-            new Rect.fromLTRB(rectLeft, rectTop, rectRight, rectBottom);
-        canvas.drawRect(ocRect, rectPaint);
+          // Draw volume bars
+          Rect volumeRect = new Rect.fromLTRB(
+              rectLeft, volumeBarTop, rectRight, volumeBarBottom);
+          canvas.drawRect(volumeRect, rectPaint);
+        } else {
+          canvas.drawLine(new Offset(rectLeft, rectBottom - lineWidth / 2),
+              new Offset(rectRight, rectBottom - lineWidth / 2), rectPaint);
+          canvas.drawLine(new Offset(rectLeft, rectTop + lineWidth / 2),
+              new Offset(rectRight, rectTop + lineWidth / 2), rectPaint);
+          canvas.drawLine(new Offset(rectLeft + lineWidth / 2, rectBottom),
+              new Offset(rectLeft + lineWidth / 2, rectTop), rectPaint);
+          canvas.drawLine(new Offset(rectRight - lineWidth / 2, rectBottom),
+              new Offset(rectRight - lineWidth / 2, rectTop), rectPaint);
 
-        // Draw volume bars
-        Rect volumeRect = new Rect.fromLTRB(
-            rectLeft, volumeBarTop, rectRight, volumeBarBottom);
-        canvas.drawRect(volumeRect, rectPaint);
+          // Draw volume bars
+          canvas.drawLine(new Offset(rectLeft, volumeBarBottom - lineWidth / 2),
+              new Offset(rectRight, volumeBarBottom - lineWidth / 2), rectPaint);
+          canvas.drawLine(new Offset(rectLeft, volumeBarTop + lineWidth / 2),
+              new Offset(rectRight, volumeBarTop + lineWidth / 2), rectPaint);
+          canvas.drawLine(new Offset(rectLeft + lineWidth / 2, volumeBarBottom),
+              new Offset(rectLeft + lineWidth / 2, volumeBarTop), rectPaint);
+          canvas.drawLine(new Offset(rectRight - lineWidth / 2, volumeBarBottom),
+              new Offset(rectRight - lineWidth / 2, volumeBarTop), rectPaint);
+        }
       } else {
         // Draw candlestick if increase
         rectTop = (height - (data[i]["close"] - _min) * heightNormalizer) +
@@ -254,25 +281,37 @@ class _OHLCVPainter extends CustomPainter {
         rectPaint = new Paint()
           ..color = increaseColor
           ..strokeWidth = lineWidth;
+        
+        if (fillBoxes){
+          Rect ocRect =
+          new Rect.fromLTRB(rectLeft, rectTop, rectRight, rectBottom);
+          canvas.drawRect(ocRect, rectPaint);
 
-        canvas.drawLine(new Offset(rectLeft, rectBottom - lineWidth / 2),
-            new Offset(rectRight, rectBottom - lineWidth / 2), rectPaint);
-        canvas.drawLine(new Offset(rectLeft, rectTop + lineWidth / 2),
-            new Offset(rectRight, rectTop + lineWidth / 2), rectPaint);
-        canvas.drawLine(new Offset(rectLeft + lineWidth / 2, rectBottom),
-            new Offset(rectLeft + lineWidth / 2, rectTop), rectPaint);
-        canvas.drawLine(new Offset(rectRight - lineWidth / 2, rectBottom),
-            new Offset(rectRight - lineWidth / 2, rectTop), rectPaint);
+          // Draw volume bars
+          Rect volumeRect = new Rect.fromLTRB(
+              rectLeft, volumeBarTop, rectRight, volumeBarBottom);
+          canvas.drawRect(volumeRect, rectPaint);
+        } else {
+          canvas.drawLine(new Offset(rectLeft, rectBottom - lineWidth / 2),
+              new Offset(rectRight, rectBottom - lineWidth / 2), rectPaint);
+          canvas.drawLine(new Offset(rectLeft, rectTop + lineWidth / 2),
+              new Offset(rectRight, rectTop + lineWidth / 2), rectPaint);
+          canvas.drawLine(new Offset(rectLeft + lineWidth / 2, rectBottom),
+              new Offset(rectLeft + lineWidth / 2, rectTop), rectPaint);
+          canvas.drawLine(new Offset(rectRight - lineWidth / 2, rectBottom),
+              new Offset(rectRight - lineWidth / 2, rectTop), rectPaint);
 
-        // Draw volume bars
-        canvas.drawLine(new Offset(rectLeft, volumeBarBottom - lineWidth / 2),
-            new Offset(rectRight, volumeBarBottom - lineWidth / 2), rectPaint);
-        canvas.drawLine(new Offset(rectLeft, volumeBarTop + lineWidth / 2),
-            new Offset(rectRight, volumeBarTop + lineWidth / 2), rectPaint);
-        canvas.drawLine(new Offset(rectLeft + lineWidth / 2, volumeBarBottom),
-            new Offset(rectLeft + lineWidth / 2, volumeBarTop), rectPaint);
-        canvas.drawLine(new Offset(rectRight - lineWidth / 2, volumeBarBottom),
-            new Offset(rectRight - lineWidth / 2, volumeBarTop), rectPaint);
+          // Draw volume bars
+          canvas.drawLine(new Offset(rectLeft, volumeBarBottom - lineWidth / 2),
+              new Offset(rectRight, volumeBarBottom - lineWidth / 2), rectPaint);
+          canvas.drawLine(new Offset(rectLeft, volumeBarTop + lineWidth / 2),
+              new Offset(rectRight, volumeBarTop + lineWidth / 2), rectPaint);
+          canvas.drawLine(new Offset(rectLeft + lineWidth / 2, volumeBarBottom),
+              new Offset(rectLeft + lineWidth / 2, volumeBarTop), rectPaint);
+          canvas.drawLine(new Offset(rectRight - lineWidth / 2, volumeBarBottom),
+              new Offset(rectRight - lineWidth / 2, volumeBarTop), rectPaint);
+        }
+
       }
 
       // Draw low/high candlestick wicks
