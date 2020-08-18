@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -446,7 +448,7 @@ class _OHLCVPainter extends CustomPainter {
       rectLeft = (candleIndex * width / data.length) + barWidth/2;
       rectPaint
       ..color = selectionColor
-      ..strokeWidth = 1.0;
+      ..strokeWidth = .7;
 
       canvas.drawLine(new Offset(rectLeft, 0), new Offset(rectLeft, size.height), rectPaint);
     }
@@ -456,7 +458,7 @@ class _OHLCVPainter extends CustomPainter {
     double singleCandle = size.width/data.length;
     int candleIndex = touchPosition.dx~/singleCandle;
 
-    return candleIndex;
+    return max(min(candleIndex, data.length-1), 0);
   }
 
   @override
