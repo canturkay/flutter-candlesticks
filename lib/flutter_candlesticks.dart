@@ -21,7 +21,9 @@ class OHLCVGraph extends StatefulWidget {
     this.lowHighColor,
     this.volumeBarOpacity = 1.0,
     this.barWidth,
-    this.selectionColor = Colors.black
+    this.selectionColor = Colors.black,
+    this.touchDownCallBack,
+    this.touchUpCallBack
   })  : assert(data != null),
         super(key: key);
 
@@ -77,6 +79,9 @@ class OHLCVGraph extends StatefulWidget {
   /// Color for selection line
   final Color selectionColor;
 
+  final Function touchDownCallBack;
+  final Function touchUpCallBack;
+
   @override
   _OHLCVGraphState createState() => _OHLCVGraphState();
 }
@@ -85,6 +90,7 @@ class _OHLCVGraphState extends State<OHLCVGraph> {
   final GlobalKey _chartKey = GlobalKey();
 
   Offset touchPosition;
+  Function touchCallback;
 
   Size _getChartSize() {
     final RenderBox containerRenderBox = _chartKey.currentContext?.findRenderObject();
@@ -101,22 +107,26 @@ class _OHLCVGraphState extends State<OHLCVGraph> {
         setState(() {
           touchPosition =
               d.localPosition;
+          touchCallback = widget.touchDownCallBack;
         });
       },
       onPanUpdate: (d){
         setState(() {
           touchPosition =
               d.localPosition;
+          touchCallback = widget.touchDownCallBack;
         });
       },
       onPanEnd: (d){
         setState(() {
           touchPosition = null;
+          touchCallback = widget.touchUpCallBack;
         });
       },
       onTapUp: (d){
         setState(() {
           touchPosition = null;
+          touchCallback = widget.touchUpCallBack;
         });
       },
       child: new LimitedBox(
@@ -140,7 +150,8 @@ class _OHLCVGraphState extends State<OHLCVGraph> {
               volumeBarOpacity: widget.volumeBarOpacity,
           barWidth: widget.barWidth,
           touchPosition: touchPosition,
-          selectionColor: widget.selectionColor),
+          selectionColor: widget.selectionColor,
+          touchCallback: touchCallback),
         ),
       ),
     );
@@ -164,7 +175,8 @@ class _OHLCVPainter extends CustomPainter {
       @required this.volumeBarOpacity,
       @required this.barWidth,
       @required this.touchPosition,
-      @required this.selectionColor});
+      @required this.selectionColor,
+      @required this.touchCallback});
 
   final List data;
   final double lineWidth;
@@ -183,6 +195,7 @@ class _OHLCVPainter extends CustomPainter {
   final double barWidth;
   final Offset touchPosition;
   final Color selectionColor;
+  final Function touchCallback;
 
   double _min;
   double _max;
@@ -426,6 +439,9 @@ class _OHLCVPainter extends CustomPainter {
 
     if (touchPosition != null){
       int candleIndex = _getClosestTouchCandleIndex(size);
+      if (touchCallback != null){
+        touchCallback(candleIndex);
+      }
 
       rectLeft = (candleIndex * width / data.length) + barWidth/2;
       rectPaint
