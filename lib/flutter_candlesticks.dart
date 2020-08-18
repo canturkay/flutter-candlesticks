@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class OHLCVGraph extends StatelessWidget {
+class OHLCVGraph extends StatefulWidget {
   OHLCVGraph({
     Key key,
     @required this.data,
@@ -74,27 +74,69 @@ class OHLCVGraph extends StatelessWidget {
   final double barWidth;
 
   @override
+  _OHLCVGraphState createState() => _OHLCVGraphState();
+}
+
+class _OHLCVGraphState extends State<OHLCVGraph> {
+  final GlobalKey _chartKey = GlobalKey();
+
+  Offset touchPosition;
+
+  Size _getChartSize() {
+    final RenderBox containerRenderBox = _chartKey.currentContext?.findRenderObject();
+    if (containerRenderBox != null && containerRenderBox.hasSize) {
+      return containerRenderBox.size;
+    }
+    return null;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return new LimitedBox(
-      maxHeight: fallbackHeight,
-      maxWidth: fallbackWidth,
-      child: new CustomPaint(
-        size: Size.infinite,
-        painter: new _OHLCVPainter(data,
-            lineWidth: lineWidth,
-            gridLineColor: gridLineColor,
-            gridLineAmount: gridLineAmount,
-            gridLineWidth: gridLineWidth,
-            gridLineLabelColor: gridLineLabelColor,
-            enableGridLines: enableGridLines,
-            volumeProp: volumeProp,
-            labelPrefix: labelPrefix,
-            increaseColor: increaseColor,
-            decreaseColor: decreaseColor,
-            fillBoxes: fillBoxes,
-        lowHighColor: lowHighColor,
-            volumeBarOpacity: volumeBarOpacity,
-        barWidth: barWidth),
+    return GestureDetector(
+      onLongPressStart: (d){
+        setState(() {
+          touchPosition =
+              d.localPosition;
+        });
+      },
+      onLongPressEnd: (d){
+        setState(() {
+          touchPosition = null;
+        });
+      },
+      onPanStart: (d){
+        setState(() {
+          touchPosition =
+              d.localPosition;
+        });
+      },
+      onPanEnd: (d){
+        setState(() {
+          touchPosition = null;
+        });
+      },
+      child: new LimitedBox(
+        maxHeight: widget.fallbackHeight,
+        maxWidth: widget.fallbackWidth,
+        child: new CustomPaint(
+          size: Size.infinite,
+          painter: new _OHLCVPainter(widget.data,
+              lineWidth: widget.lineWidth,
+              gridLineColor: widget.gridLineColor,
+              gridLineAmount: widget.gridLineAmount,
+              gridLineWidth: widget.gridLineWidth,
+              gridLineLabelColor: widget.gridLineLabelColor,
+              enableGridLines: widget.enableGridLines,
+              volumeProp: widget.volumeProp,
+              labelPrefix: widget.labelPrefix,
+              increaseColor: widget.increaseColor,
+              decreaseColor: widget.decreaseColor,
+              fillBoxes: widget.fillBoxes,
+          lowHighColor: widget.lowHighColor,
+              volumeBarOpacity: widget.volumeBarOpacity,
+          barWidth: widget.barWidth,
+          touchPosition: touchPosition),
+        ),
       ),
     );
   }
@@ -115,7 +157,8 @@ class _OHLCVPainter extends CustomPainter {
       @required this.fillBoxes,
       @required this.lowHighColor,
       @required this.volumeBarOpacity,
-      @required this.barWidth});
+      @required this.barWidth,
+      @required this.touchPosition});
 
   final List data;
   final double lineWidth;
@@ -132,6 +175,7 @@ class _OHLCVPainter extends CustomPainter {
   final Color lowHighColor;
   final double volumeBarOpacity;
   final double barWidth;
+  final Offset touchPosition;
 
   double _min;
   double _max;
@@ -372,6 +416,23 @@ class _OHLCVPainter extends CustomPainter {
           new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, high),
           rectPaint);
     }
+
+    if (touchPosition != null){
+      int candleIndex = _getClosestTouchCandleIndex(size);
+
+      rectLeft = (candleIndex * width / data.length) + lineWidth / 2;
+      rectPaint
+      ..color = Colors.black
+      ..strokeWidth = 2.0;
+
+      canvas.drawLine(new Offset(rectLeft, 0), new Offset(rectLeft, height), rectPaint);
+    }
+  }
+
+  int _getClosestTouchCandleIndex(Size size){
+    double singleCandle = size.width/data.length;
+    int candleIndex = touchPosition.dx~/singleCandle;
+
   }
 
   @override
@@ -383,6 +444,7 @@ class _OHLCVPainter extends CustomPainter {
         gridLineAmount != old.gridLineAmount ||
         gridLineWidth != old.gridLineWidth ||
         volumeProp != old.volumeProp ||
-        gridLineLabelColor != old.gridLineLabelColor;
+        gridLineLabelColor != old.gridLineLabelColor ||
+        touchPosition != old.touchPosition;
   }
 }
