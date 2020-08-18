@@ -427,19 +427,19 @@ class _OHLCVPainter extends CustomPainter {
     if (touchPosition != null){
       int candleIndex = _getClosestTouchCandleIndex(size);
 
-      rectLeft = (candleIndex * width / data.length) + lineWidth / 2;
+      rectLeft = (candleIndex * width / data.length);
       rectPaint
-      ..color = Colors.black
-      ..strokeWidth = 2.0;
+      ..color = selectionColor
+      ..strokeWidth = 1.0;
 
-      canvas.drawLine(new Offset(rectLeft, 0), new Offset(rectLeft, height), rectPaint);
+      canvas.drawLine(new Offset(rectLeft, 0), new Offset(rectLeft, size.height), rectPaint);
     }
   }
 
   int _getClosestTouchCandleIndex(Size size){
     double singleCandle = size.width/data.length;
     int candleIndex = touchPosition.dx~/singleCandle;
-    
+
     return candleIndex;
   }
 
