@@ -18,7 +18,9 @@ class OHLCVGraph extends StatelessWidget {
     this.increaseColor = Colors.green,
     this.decreaseColor = Colors.red,
     this.fillBoxes = false,
-    this.lowHighColor
+    this.lowHighColor,
+    this.volumeBarOpacity = 1.0,
+    this.barWidth
   })  : assert(data != null),
         super(key: key);
 
@@ -65,6 +67,12 @@ class OHLCVGraph extends StatelessWidget {
   /// Color for low/high spread lines, increaseColor or decreaseColor by default
   final Color lowHighColor;
 
+  /// Opacity for the volume bar
+  final double volumeBarOpacity;
+
+  /// Width for bars
+  final double barWidth;
+
   @override
   Widget build(BuildContext context) {
     return new LimitedBox(
@@ -84,7 +92,9 @@ class OHLCVGraph extends StatelessWidget {
             increaseColor: increaseColor,
             decreaseColor: decreaseColor,
             fillBoxes: fillBoxes,
-        lowHighColor: lowHighColor),
+        lowHighColor: lowHighColor,
+            volumeBarOpacity: volumeBarOpacity,
+        barWidth: barWidth),
       ),
     );
   }
@@ -103,7 +113,9 @@ class _OHLCVPainter extends CustomPainter {
       @required this.increaseColor,
       @required this.decreaseColor,
       @required this.fillBoxes,
-      @required this.lowHighColor});
+      @required this.lowHighColor,
+      @required this.volumeBarOpacity,
+      @required this.barWidth});
 
   final List data;
   final double lineWidth;
@@ -118,6 +130,8 @@ class _OHLCVPainter extends CustomPainter {
   final Color decreaseColor;
   final bool fillBoxes;
   final Color lowHighColor;
+  final double volumeBarOpacity;
+  final double barWidth;
 
   double _min;
   double _max;
@@ -225,7 +239,7 @@ class _OHLCVPainter extends CustomPainter {
     }
 
     final double heightNormalizer = height / (_max - _min);
-    final double rectWidth = width / data.length / 2;
+    final double rectWidth = barWidth ?? width / data.length *.7;
 
     double rectLeft;
     double rectTop;
@@ -258,7 +272,9 @@ class _OHLCVPainter extends CustomPainter {
           // Draw volume bars
           Rect volumeRect = new Rect.fromLTRB(
               rectLeft, volumeBarTop, rectRight, volumeBarBottom);
-          canvas.drawRect(volumeRect, rectPaint);
+          canvas.drawRect(volumeRect,  new Paint()
+            ..color = decreaseColor.withOpacity(volumeBarOpacity)
+            ..strokeWidth = lineWidth);
         } else {
           canvas.drawLine(new Offset(rectLeft, rectBottom - lineWidth / 2),
               new Offset(rectRight, rectBottom - lineWidth / 2), rectPaint);
@@ -271,13 +287,21 @@ class _OHLCVPainter extends CustomPainter {
 
           // Draw volume bars
           canvas.drawLine(new Offset(rectLeft, volumeBarBottom - lineWidth / 2),
-              new Offset(rectRight, volumeBarBottom - lineWidth / 2), rectPaint);
+              new Offset(rectRight, volumeBarBottom - lineWidth / 2), new Paint()
+                ..color = decreaseColor.withOpacity(volumeBarOpacity)
+                ..strokeWidth = lineWidth);
           canvas.drawLine(new Offset(rectLeft, volumeBarTop + lineWidth / 2),
-              new Offset(rectRight, volumeBarTop + lineWidth / 2), rectPaint);
+              new Offset(rectRight, volumeBarTop + lineWidth / 2), new Paint()
+                ..color = decreaseColor.withOpacity(volumeBarOpacity)
+                ..strokeWidth = lineWidth);
           canvas.drawLine(new Offset(rectLeft + lineWidth / 2, volumeBarBottom),
-              new Offset(rectLeft + lineWidth / 2, volumeBarTop), rectPaint);
+              new Offset(rectLeft + lineWidth / 2, volumeBarTop), new Paint()
+                ..color = decreaseColor.withOpacity(volumeBarOpacity)
+                ..strokeWidth = lineWidth);
           canvas.drawLine(new Offset(rectRight - lineWidth / 2, volumeBarBottom),
-              new Offset(rectRight - lineWidth / 2, volumeBarTop), rectPaint);
+              new Offset(rectRight - lineWidth / 2, volumeBarTop), new Paint()
+                ..color = decreaseColor.withOpacity(volumeBarOpacity)
+                ..strokeWidth = lineWidth);
         }
       } else {
         // Draw candlestick if increase
@@ -297,7 +321,9 @@ class _OHLCVPainter extends CustomPainter {
           // Draw volume bars
           Rect volumeRect = new Rect.fromLTRB(
               rectLeft, volumeBarTop, rectRight, volumeBarBottom);
-          canvas.drawRect(volumeRect, rectPaint);
+          canvas.drawRect(volumeRect, new Paint()
+            ..color = increaseColor.withOpacity(volumeBarOpacity)
+            ..strokeWidth = lineWidth);
         } else {
           canvas.drawLine(new Offset(rectLeft, rectBottom - lineWidth / 2),
               new Offset(rectRight, rectBottom - lineWidth / 2), rectPaint);
@@ -310,13 +336,21 @@ class _OHLCVPainter extends CustomPainter {
 
           // Draw volume bars
           canvas.drawLine(new Offset(rectLeft, volumeBarBottom - lineWidth / 2),
-              new Offset(rectRight, volumeBarBottom - lineWidth / 2), rectPaint);
+              new Offset(rectRight, volumeBarBottom - lineWidth / 2),  new Paint()
+                ..color = increaseColor.withOpacity(volumeBarOpacity)
+                ..strokeWidth = lineWidth);
           canvas.drawLine(new Offset(rectLeft, volumeBarTop + lineWidth / 2),
-              new Offset(rectRight, volumeBarTop + lineWidth / 2), rectPaint);
+              new Offset(rectRight, volumeBarTop + lineWidth / 2),  new Paint()
+                ..color = increaseColor.withOpacity(volumeBarOpacity)
+                ..strokeWidth = lineWidth);
           canvas.drawLine(new Offset(rectLeft + lineWidth / 2, volumeBarBottom),
-              new Offset(rectLeft + lineWidth / 2, volumeBarTop), rectPaint);
+              new Offset(rectLeft + lineWidth / 2, volumeBarTop),  new Paint()
+                ..color = increaseColor.withOpacity(volumeBarOpacity)
+                ..strokeWidth = lineWidth);
           canvas.drawLine(new Offset(rectRight - lineWidth / 2, volumeBarBottom),
-              new Offset(rectRight - lineWidth / 2, volumeBarTop), rectPaint);
+              new Offset(rectRight - lineWidth / 2, volumeBarTop),  new Paint()
+                ..color = increaseColor.withOpacity(volumeBarOpacity)
+                ..strokeWidth = lineWidth);
         }
 
       }
