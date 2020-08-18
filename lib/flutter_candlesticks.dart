@@ -321,17 +321,22 @@ class _OHLCVPainter extends CustomPainter {
 
       }
 
+      // Change the color for low/high spread if [lowHighColor] is set
+      if (lowHighColor != null){
+        rectPaint.color = lowHighColor;
+      }
+
       // Draw low/high candlestick wicks
       double low = height - (data[i]["low"] - _min) * heightNormalizer;
       double high = height - (data[i]["high"] - _min) * heightNormalizer;
       canvas.drawLine(
           new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, rectBottom),
           new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, low),
-          lowHighColor ?? rectPaint);
+          rectPaint);
       canvas.drawLine(
           new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, rectTop),
           new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, high),
-          lowHighColor ?? rectPaint);
+          rectPaint);
     }
   }
 
