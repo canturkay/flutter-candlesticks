@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class OHLCVGraph extends StatefulWidget {
@@ -451,6 +452,8 @@ class _OHLCVPainter extends CustomPainter {
       ..strokeWidth = .7;
 
       canvas.drawLine(new Offset(rectLeft, 0), new Offset(rectLeft, size.height), rectPaint);
+    } else if (touchCallback != null) {
+      touchCallback();
     }
   }
 
