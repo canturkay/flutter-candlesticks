@@ -471,6 +471,7 @@ class _OHLCVPainter extends CustomPainter {
         gridLineWidth != old.gridLineWidth ||
         volumeProp != old.volumeProp ||
         gridLineLabelColor != old.gridLineLabelColor ||
-        touchPosition != old.touchPosition;
+        touchPosition != old.touchPosition||
+        touchCallback != old.touchCallback;
   }
 }
