@@ -5,29 +5,29 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class OHLCVGraph extends StatefulWidget {
-  OHLCVGraph({
-    Key key,
-    @required this.data,
-    this.lineWidth = 1.0,
-    this.fallbackHeight = 100.0,
-    this.fallbackWidth = 300.0,
-    this.gridLineColor = Colors.grey,
-    this.gridLineAmount = 5,
-    this.gridLineWidth = 0.5,
-    this.gridLineLabelColor = Colors.grey,
-    this.labelPrefix = "\$",
-    @required this.enableGridLines,
-    @required this.volumeProp,
-    this.increaseColor = Colors.green,
-    this.decreaseColor = Colors.red,
-    this.fillBoxes = false,
-    this.lowHighColor,
-    this.volumeBarOpacity = 1.0,
-    this.barWidth,
-    this.selectionColor = Colors.black,
-    this.touchDownCallBack,
-    this.touchUpCallBack
-  })  : assert(data != null),
+  OHLCVGraph(
+      {Key key,
+      @required this.data,
+      this.lineWidth = 1.0,
+      this.fallbackHeight = 100.0,
+      this.fallbackWidth = 300.0,
+      this.gridLineColor = Colors.grey,
+      this.gridLineAmount = 5,
+      this.gridLineWidth = 0.5,
+      this.gridLineLabelColor = Colors.grey,
+      this.labelPrefix = "\$",
+      @required this.enableGridLines,
+      @required this.volumeProp,
+      this.increaseColor = Colors.green,
+      this.decreaseColor = Colors.red,
+      this.fillBoxes = false,
+      this.lowHighColor,
+      this.volumeBarOpacity = 1.0,
+      this.barWidth,
+      this.selectionColor = Colors.black,
+      this.touchDownCallBack,
+      this.touchUpCallBack})
+      : assert(data != null),
         super(key: key);
 
   /// OHLCV data to graph  /// List of Maps containing open, high, low, close and volumeto
@@ -96,7 +96,8 @@ class _OHLCVGraphState extends State<OHLCVGraph> {
   Function touchCallback;
 
   Size _getChartSize() {
-    final RenderBox containerRenderBox = _chartKey.currentContext?.findRenderObject();
+    final RenderBox containerRenderBox =
+        _chartKey.currentContext?.findRenderObject();
     if (containerRenderBox != null && containerRenderBox.hasSize) {
       return containerRenderBox.size;
     }
@@ -106,27 +107,43 @@ class _OHLCVGraphState extends State<OHLCVGraph> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (d){
+      onLongPressStart: (d) {
         setState(() {
-          touchPosition =
-              d.localPosition;
+          touchPosition = d.localPosition;
           touchCallback = widget.touchDownCallBack;
         });
       },
-      onPanUpdate: (d){
+      onLongPressMoveUpdate: (d) {
         setState(() {
-          touchPosition =
-              d.localPosition;
+          touchPosition = d.localPosition;
           touchCallback = widget.touchDownCallBack;
         });
       },
-      onPanEnd: (d){
+      onPanDown: (d) {
+        setState(() {
+          touchPosition = d.localPosition;
+          touchCallback = widget.touchDownCallBack;
+        });
+      },
+      onPanUpdate: (d) {
+        setState(() {
+          touchPosition = d.localPosition;
+          touchCallback = widget.touchDownCallBack;
+        });
+      },
+      onLongPressEnd: (_) {
         setState(() {
           touchPosition = null;
           touchCallback = widget.touchUpCallBack;
         });
       },
-      onTapUp: (d){
+      onPanEnd: (_) {
+        setState(() {
+          touchPosition = null;
+          touchCallback = widget.touchUpCallBack;
+        });
+      },
+      onPanCancel: () {
         setState(() {
           touchPosition = null;
           touchCallback = widget.touchUpCallBack;
@@ -149,12 +166,12 @@ class _OHLCVGraphState extends State<OHLCVGraph> {
               increaseColor: widget.increaseColor,
               decreaseColor: widget.decreaseColor,
               fillBoxes: widget.fillBoxes,
-          lowHighColor: widget.lowHighColor,
+              lowHighColor: widget.lowHighColor,
               volumeBarOpacity: widget.volumeBarOpacity,
-          barWidth: widget.barWidth,
-          touchPosition: touchPosition,
-          selectionColor: widget.selectionColor,
-          touchCallback: touchCallback),
+              barWidth: widget.barWidth,
+              touchPosition: touchPosition,
+              selectionColor: widget.selectionColor,
+              touchCallback: touchCallback),
         ),
       ),
     );
@@ -306,7 +323,7 @@ class _OHLCVPainter extends CustomPainter {
     }
 
     final double heightNormalizer = height / (_max - _min);
-    final double rectWidth = barWidth ?? width / data.length *.7;
+    final double rectWidth = barWidth ?? width / data.length * .7;
 
     double rectLeft;
     double rectTop;
@@ -331,17 +348,19 @@ class _OHLCVPainter extends CustomPainter {
         rectPaint = new Paint()
           ..color = decreaseColor
           ..strokeWidth = lineWidth;
-        if (fillBoxes){
+        if (fillBoxes) {
           Rect ocRect =
-          new Rect.fromLTRB(rectLeft, rectTop, rectRight, rectBottom);
+              new Rect.fromLTRB(rectLeft, rectTop, rectRight, rectBottom);
           canvas.drawRect(ocRect, rectPaint);
 
           // Draw volume bars
           Rect volumeRect = new Rect.fromLTRB(
               rectLeft, volumeBarTop, rectRight, volumeBarBottom);
-          canvas.drawRect(volumeRect,  new Paint()
-            ..color = decreaseColor.withOpacity(volumeBarOpacity)
-            ..strokeWidth = lineWidth);
+          canvas.drawRect(
+              volumeRect,
+              new Paint()
+                ..color = decreaseColor.withOpacity(volumeBarOpacity)
+                ..strokeWidth = lineWidth);
         } else {
           canvas.drawLine(new Offset(rectLeft, rectBottom - lineWidth / 2),
               new Offset(rectRight, rectBottom - lineWidth / 2), rectPaint);
@@ -353,20 +372,28 @@ class _OHLCVPainter extends CustomPainter {
               new Offset(rectRight - lineWidth / 2, rectTop), rectPaint);
 
           // Draw volume bars
-          canvas.drawLine(new Offset(rectLeft, volumeBarBottom - lineWidth / 2),
-              new Offset(rectRight, volumeBarBottom - lineWidth / 2), new Paint()
+          canvas.drawLine(
+              new Offset(rectLeft, volumeBarBottom - lineWidth / 2),
+              new Offset(rectRight, volumeBarBottom - lineWidth / 2),
+              new Paint()
                 ..color = decreaseColor.withOpacity(volumeBarOpacity)
                 ..strokeWidth = lineWidth);
-          canvas.drawLine(new Offset(rectLeft, volumeBarTop + lineWidth / 2),
-              new Offset(rectRight, volumeBarTop + lineWidth / 2), new Paint()
+          canvas.drawLine(
+              new Offset(rectLeft, volumeBarTop + lineWidth / 2),
+              new Offset(rectRight, volumeBarTop + lineWidth / 2),
+              new Paint()
                 ..color = decreaseColor.withOpacity(volumeBarOpacity)
                 ..strokeWidth = lineWidth);
-          canvas.drawLine(new Offset(rectLeft + lineWidth / 2, volumeBarBottom),
-              new Offset(rectLeft + lineWidth / 2, volumeBarTop), new Paint()
+          canvas.drawLine(
+              new Offset(rectLeft + lineWidth / 2, volumeBarBottom),
+              new Offset(rectLeft + lineWidth / 2, volumeBarTop),
+              new Paint()
                 ..color = decreaseColor.withOpacity(volumeBarOpacity)
                 ..strokeWidth = lineWidth);
-          canvas.drawLine(new Offset(rectRight - lineWidth / 2, volumeBarBottom),
-              new Offset(rectRight - lineWidth / 2, volumeBarTop), new Paint()
+          canvas.drawLine(
+              new Offset(rectRight - lineWidth / 2, volumeBarBottom),
+              new Offset(rectRight - lineWidth / 2, volumeBarTop),
+              new Paint()
                 ..color = decreaseColor.withOpacity(volumeBarOpacity)
                 ..strokeWidth = lineWidth);
         }
@@ -379,18 +406,20 @@ class _OHLCVPainter extends CustomPainter {
         rectPaint = new Paint()
           ..color = increaseColor
           ..strokeWidth = lineWidth;
-        
-        if (fillBoxes){
+
+        if (fillBoxes) {
           Rect ocRect =
-          new Rect.fromLTRB(rectLeft, rectTop, rectRight, rectBottom);
+              new Rect.fromLTRB(rectLeft, rectTop, rectRight, rectBottom);
           canvas.drawRect(ocRect, rectPaint);
 
           // Draw volume bars
           Rect volumeRect = new Rect.fromLTRB(
               rectLeft, volumeBarTop, rectRight, volumeBarBottom);
-          canvas.drawRect(volumeRect, new Paint()
-            ..color = increaseColor.withOpacity(volumeBarOpacity)
-            ..strokeWidth = lineWidth);
+          canvas.drawRect(
+              volumeRect,
+              new Paint()
+                ..color = increaseColor.withOpacity(volumeBarOpacity)
+                ..strokeWidth = lineWidth);
         } else {
           canvas.drawLine(new Offset(rectLeft, rectBottom - lineWidth / 2),
               new Offset(rectRight, rectBottom - lineWidth / 2), rectPaint);
@@ -402,28 +431,35 @@ class _OHLCVPainter extends CustomPainter {
               new Offset(rectRight - lineWidth / 2, rectTop), rectPaint);
 
           // Draw volume bars
-          canvas.drawLine(new Offset(rectLeft, volumeBarBottom - lineWidth / 2),
-              new Offset(rectRight, volumeBarBottom - lineWidth / 2),  new Paint()
+          canvas.drawLine(
+              new Offset(rectLeft, volumeBarBottom - lineWidth / 2),
+              new Offset(rectRight, volumeBarBottom - lineWidth / 2),
+              new Paint()
                 ..color = increaseColor.withOpacity(volumeBarOpacity)
                 ..strokeWidth = lineWidth);
-          canvas.drawLine(new Offset(rectLeft, volumeBarTop + lineWidth / 2),
-              new Offset(rectRight, volumeBarTop + lineWidth / 2),  new Paint()
+          canvas.drawLine(
+              new Offset(rectLeft, volumeBarTop + lineWidth / 2),
+              new Offset(rectRight, volumeBarTop + lineWidth / 2),
+              new Paint()
                 ..color = increaseColor.withOpacity(volumeBarOpacity)
                 ..strokeWidth = lineWidth);
-          canvas.drawLine(new Offset(rectLeft + lineWidth / 2, volumeBarBottom),
-              new Offset(rectLeft + lineWidth / 2, volumeBarTop),  new Paint()
+          canvas.drawLine(
+              new Offset(rectLeft + lineWidth / 2, volumeBarBottom),
+              new Offset(rectLeft + lineWidth / 2, volumeBarTop),
+              new Paint()
                 ..color = increaseColor.withOpacity(volumeBarOpacity)
                 ..strokeWidth = lineWidth);
-          canvas.drawLine(new Offset(rectRight - lineWidth / 2, volumeBarBottom),
-              new Offset(rectRight - lineWidth / 2, volumeBarTop),  new Paint()
+          canvas.drawLine(
+              new Offset(rectRight - lineWidth / 2, volumeBarBottom),
+              new Offset(rectRight - lineWidth / 2, volumeBarTop),
+              new Paint()
                 ..color = increaseColor.withOpacity(volumeBarOpacity)
                 ..strokeWidth = lineWidth);
         }
-
       }
 
       // Change the color for low/high spread if [lowHighColor] is set
-      if (lowHighColor != null){
+      if (lowHighColor != null) {
         rectPaint.color = lowHighColor;
       }
 
@@ -440,28 +476,29 @@ class _OHLCVPainter extends CustomPainter {
           rectPaint);
     }
 
-    if (touchPosition != null){
+    if (touchPosition != null) {
       int candleIndex = _getClosestTouchCandleIndex(size);
-      if (touchCallback != null){
+      if (touchCallback != null) {
         touchCallback(candleIndex);
       }
 
-      rectLeft = (candleIndex * width / data.length) + barWidth/2;
+      rectLeft = (candleIndex * width / data.length) + barWidth / 2;
       rectPaint
-      ..color = selectionColor
-      ..strokeWidth = .7;
+        ..color = selectionColor
+        ..strokeWidth = .7;
 
-      canvas.drawLine(new Offset(rectLeft, 0), new Offset(rectLeft, size.height), rectPaint);
+      canvas.drawLine(new Offset(rectLeft, 0),
+          new Offset(rectLeft, size.height), rectPaint);
     } else if (touchCallback != null) {
       touchCallback();
     }
   }
 
-  int _getClosestTouchCandleIndex(Size size){
-    double singleCandle = size.width/data.length;
-    int candleIndex = touchPosition.dx~/singleCandle;
+  int _getClosestTouchCandleIndex(Size size) {
+    double singleCandle = size.width / data.length;
+    int candleIndex = touchPosition.dx ~/ singleCandle;
 
-    return max(min(candleIndex, data.length-1), 0);
+    return max(min(candleIndex, data.length - 1), 0);
   }
 
   @override
@@ -474,7 +511,7 @@ class _OHLCVPainter extends CustomPainter {
         gridLineWidth != old.gridLineWidth ||
         volumeProp != old.volumeProp ||
         gridLineLabelColor != old.gridLineLabelColor ||
-        touchPosition != old.touchPosition||
+        touchPosition != old.touchPosition ||
         touchCallback != old.touchCallback;
   }
 }
