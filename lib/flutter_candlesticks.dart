@@ -482,7 +482,7 @@ class _OHLCVPainter extends CustomPainter {
         touchCallback(candleIndex);
       }
 
-      rectLeft = (candleIndex * width / data.length) + barWidth + lineWidth/2;
+      rectLeft = (candleIndex * width / data.length) + barWidth;
       rectPaint
         ..color = selectionColor
         ..strokeWidth = .7;
