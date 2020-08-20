@@ -485,7 +485,7 @@ class _OHLCVPainter extends CustomPainter {
     }
 
     if (touchPosition != null) {
-      int candleIndex = _getClosestTouchCandleIndex(size);
+      int candleIndex = _getClosestTouchCandleIndex(width);
       if (touchCallback != null) {
         touchCallback(candleIndex);
       }
@@ -502,8 +502,8 @@ class _OHLCVPainter extends CustomPainter {
     }
   }
 
-  int _getClosestTouchCandleIndex(Size size) {
-    double singleCandle = size.width / data.length;
+  int _getClosestTouchCandleIndex(double width) {
+    double singleCandle = width / data.length;
     int candleIndex = touchPosition.dx ~/ singleCandle;
 
     return max(min(candleIndex, data.length - 1), 0);
