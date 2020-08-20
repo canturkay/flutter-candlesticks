@@ -26,7 +26,8 @@ class OHLCVGraph extends StatefulWidget {
       this.barWidth,
       this.selectionColor = Colors.black,
       this.touchDownCallBack,
-      this.touchUpCallBack})
+      this.touchUpCallBack,
+      this.widthProp = 1.0})
       : assert(data != null),
         super(key: key);
 
@@ -82,6 +83,10 @@ class OHLCVGraph extends StatefulWidget {
   /// Color for selection line
   final Color selectionColor;
 
+  /// The proportion of the width to draw on
+  final double widthProp;
+
+  /// Callbacks for touch events
   final Function touchDownCallBack;
   final Function touchUpCallBack;
 
@@ -171,7 +176,8 @@ class _OHLCVGraphState extends State<OHLCVGraph> {
               barWidth: widget.barWidth,
               touchPosition: touchPosition,
               selectionColor: widget.selectionColor,
-              touchCallback: touchCallback),
+              touchCallback: touchCallback,
+          widthProp: widget.widthProp),
         ),
       ),
     );
@@ -196,7 +202,8 @@ class _OHLCVPainter extends CustomPainter {
       @required this.barWidth,
       @required this.touchPosition,
       @required this.selectionColor,
-      @required this.touchCallback});
+      @required this.touchCallback,
+      @required this.widthProp});
 
   final List data;
   final double lineWidth;
@@ -216,6 +223,7 @@ class _OHLCVPainter extends CustomPainter {
   final Offset touchPosition;
   final Color selectionColor;
   final Function touchCallback;
+  final double widthProp;
 
   double _min;
   double _max;
@@ -295,7 +303,7 @@ class _OHLCVPainter extends CustomPainter {
     final double volumeHeight = size.height * volumeProp;
     final double volumeNormalizer = volumeHeight / _maxVolume;
 
-    double width = size.width;
+    double width = size.width * widthProp;
     final double height = size.height * (1 - volumeProp);
 
     if (enableGridLines) {
