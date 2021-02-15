@@ -177,7 +177,7 @@ class _OHLCVGraphState extends State<OHLCVGraph> {
               touchPosition: touchPosition,
               selectionColor: widget.selectionColor,
               touchCallback: touchCallback,
-          widthProp: widget.widthProp),
+              widthProp: widget.widthProp),
         ),
       ),
     );
@@ -342,13 +342,12 @@ class _OHLCVPainter extends CustomPainter {
 
     // Loop through all data
     for (int i = 0; i < data.length; i++) {
-      rectLeft = (i * width / data.length) + lineWidth / 2 + barWidth/2;
+      rectLeft = (i * width / data.length) + lineWidth / 2 + barWidth / 2;
       rectRight = rectLeft + rectWidth;
 
       double volumeBarTop = (height + volumeHeight) -
           (data[i]["volumeto"] * volumeNormalizer - lineWidth / 2);
       double volumeBarBottom = height + volumeHeight + lineWidth / 2;
-
 
       if (data[i]["open"] > data[i]["close"]) {
         // Draw candlestick if decrease
@@ -368,21 +367,30 @@ class _OHLCVPainter extends CustomPainter {
           ..strokeWidth = lineWidth;
       }
 
+      Paint lowHighPaint = new Paint()..strokeWidth = lineWidth;
+
+      // Change the color for low/high spread if [lowHighColor] is set
+      if (lowHighColor != null) {
+        lowHighPaint.color = lowHighColor;
+      } else {
+        lowHighPaint.color = rectPaint.color;
+      }
+
       // Draw low/high candlestick wicks
       double low = height - (data[i]["low"] - _min) * heightNormalizer;
       double high = height - (data[i]["high"] - _min) * heightNormalizer;
       canvas.drawLine(
           new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, rectBottom),
           new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, low),
-          rectPaint);
+          lowHighPaint);
       canvas.drawLine(
           new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, rectTop),
           new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, high),
-          rectPaint);
+          lowHighPaint);
 
       if (fillBoxes) {
         Rect ocRect =
-        new Rect.fromLTRB(rectLeft, rectTop, rectRight, rectBottom);
+            new Rect.fromLTRB(rectLeft, rectTop, rectRight, rectBottom);
         canvas.drawRect(ocRect, rectPaint);
 
         // Draw volume bars
