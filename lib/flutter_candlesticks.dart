@@ -372,8 +372,6 @@ class _OHLCVPainter extends CustomPainter {
       // Change the color for low/high spread if [lowHighColor] is set
       if (lowHighColor != null) {
         lowHighPaint.color = lowHighColor;
-      } else {
-        lowHighPaint.color = rectPaint.color;
       }
 
       // Draw low/high candlestick wicks
@@ -399,7 +397,7 @@ class _OHLCVPainter extends CustomPainter {
         canvas.drawRect(
             volumeRect,
             new Paint()
-              ..color = increaseColor.withOpacity(volumeBarOpacity)
+              ..color = rectPaint.color.withOpacity(volumeBarOpacity)
               ..strokeWidth = lineWidth);
       } else {
         canvas.drawLine(new Offset(rectLeft, rectBottom - lineWidth / 2),
@@ -416,25 +414,25 @@ class _OHLCVPainter extends CustomPainter {
             new Offset(rectLeft, volumeBarBottom - lineWidth / 2),
             new Offset(rectRight, volumeBarBottom - lineWidth / 2),
             new Paint()
-              ..color = increaseColor.withOpacity(volumeBarOpacity)
+              ..color = rectPaint.color.withOpacity(volumeBarOpacity)
               ..strokeWidth = lineWidth);
         canvas.drawLine(
             new Offset(rectLeft, volumeBarTop + lineWidth / 2),
             new Offset(rectRight, volumeBarTop + lineWidth / 2),
             new Paint()
-              ..color = increaseColor.withOpacity(volumeBarOpacity)
+              ..color = rectPaint.color.withOpacity(volumeBarOpacity)
               ..strokeWidth = lineWidth);
         canvas.drawLine(
             new Offset(rectLeft + lineWidth / 2, volumeBarBottom),
             new Offset(rectLeft + lineWidth / 2, volumeBarTop),
             new Paint()
-              ..color = increaseColor.withOpacity(volumeBarOpacity)
+              ..color = rectPaint.color.withOpacity(volumeBarOpacity)
               ..strokeWidth = lineWidth);
         canvas.drawLine(
             new Offset(rectRight - lineWidth / 2, volumeBarBottom),
             new Offset(rectRight - lineWidth / 2, volumeBarTop),
             new Paint()
-              ..color = increaseColor.withOpacity(volumeBarOpacity)
+              ..color = rectPaint.color.withOpacity(volumeBarOpacity)
               ..strokeWidth = lineWidth);
       }
     }
