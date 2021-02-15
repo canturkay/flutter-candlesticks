@@ -177,7 +177,7 @@ class _OHLCVGraphState extends State<OHLCVGraph> {
               touchPosition: touchPosition,
               selectionColor: widget.selectionColor,
               touchCallback: touchCallback,
-          widthProp: widget.widthProp),
+              widthProp: widget.widthProp),
         ),
       ),
     );
@@ -342,7 +342,7 @@ class _OHLCVPainter extends CustomPainter {
 
     // Loop through all data
     for (int i = 0; i < data.length; i++) {
-      rectLeft = (i * width / data.length) + lineWidth / 2 + barWidth/2;
+      rectLeft = (i * width / data.length) + lineWidth / 2 + barWidth / 2;
       rectRight = rectLeft + rectWidth;
 
       double volumeBarTop = (height + volumeHeight) -
@@ -351,7 +351,9 @@ class _OHLCVPainter extends CustomPainter {
 
       // Change the color for low/high spread if [lowHighColor] is set
       if (lowHighColor != null) {
-        rectPaint.color = lowHighColor;
+        rectPaint = new Paint()
+          ..strokeWidth = lineWidth
+          ..color = lowHighColor;
       }
 
       // Draw low/high candlestick wicks
@@ -482,8 +484,6 @@ class _OHLCVPainter extends CustomPainter {
                 ..strokeWidth = lineWidth);
         }
       }
-
-
     }
 
     if (touchPosition != null) {
