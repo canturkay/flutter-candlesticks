@@ -349,6 +349,23 @@ class _OHLCVPainter extends CustomPainter {
           (data[i]["volumeto"] * volumeNormalizer - lineWidth / 2);
       double volumeBarBottom = height + volumeHeight + lineWidth / 2;
 
+      // Change the color for low/high spread if [lowHighColor] is set
+      if (lowHighColor != null) {
+        rectPaint.color = lowHighColor;
+      }
+
+      // Draw low/high candlestick wicks
+      double low = height - (data[i]["low"] - _min) * heightNormalizer;
+      double high = height - (data[i]["high"] - _min) * heightNormalizer;
+      canvas.drawLine(
+          new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, rectBottom),
+          new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, low),
+          rectPaint);
+      canvas.drawLine(
+          new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, rectTop),
+          new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, high),
+          rectPaint);
+
       if (data[i]["open"] > data[i]["close"]) {
         // Draw candlestick if decrease
         rectTop = height - (data[i]["open"] - _min) * heightNormalizer;
@@ -466,22 +483,7 @@ class _OHLCVPainter extends CustomPainter {
         }
       }
 
-      // Change the color for low/high spread if [lowHighColor] is set
-      if (lowHighColor != null) {
-        rectPaint.color = lowHighColor;
-      }
 
-      // Draw low/high candlestick wicks
-      double low = height - (data[i]["low"] - _min) * heightNormalizer;
-      double high = height - (data[i]["high"] - _min) * heightNormalizer;
-      canvas.drawLine(
-          new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, rectBottom),
-          new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, low),
-          rectPaint);
-      canvas.drawLine(
-          new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, rectTop),
-          new Offset(rectLeft + rectWidth / 2 - lineWidth / 2, high),
-          rectPaint);
     }
 
     if (touchPosition != null) {
