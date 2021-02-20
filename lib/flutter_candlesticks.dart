@@ -165,7 +165,7 @@ class _OHLCVGraphState extends State<OHLCVGraph> {
               gridLineAmount: widget.gridLineAmount,
               gridLineWidth: widget.gridLineWidth,
               gridLineLabelColor: widget.gridLineLabelColor,
-              enableGridLines: widget.enableGridLines,
+              // enableGridLines: widget.enableGridLines,
               volumeProp: widget.volumeProp,
               labelPrefix: widget.labelPrefix,
               increaseColor: widget.increaseColor,
@@ -187,7 +187,7 @@ class _OHLCVGraphState extends State<OHLCVGraph> {
 class _OHLCVPainter extends CustomPainter {
   _OHLCVPainter(this.data,
       {@required this.lineWidth,
-      @required this.enableGridLines,
+      // @required this.enableGridLines,
       @required this.gridLineColor,
       @required this.gridLineAmount,
       @required this.gridLineWidth,
@@ -207,7 +207,7 @@ class _OHLCVPainter extends CustomPainter {
 
   final List data;
   final double lineWidth;
-  final bool enableGridLines;
+  // final bool enableGridLines;
   final Color gridLineColor;
   final int gridLineAmount;
   final double gridLineWidth;
@@ -253,45 +253,45 @@ class _OHLCVPainter extends CustomPainter {
       }
     }
 
-    if (enableGridLines) {
-      double gridLineValue;
-      for (int i = 0; i < gridLineAmount; i++) {
-        // Label grid lines
-        gridLineValue = _max - (((_max - _min) / (gridLineAmount - 1)) * i);
-
-        String gridLineText;
-        if (gridLineValue < 1) {
-          gridLineText = gridLineValue.toStringAsPrecision(4);
-        } else if (gridLineValue < 999) {
-          gridLineText = gridLineValue.toStringAsFixed(2);
-        } else {
-          gridLineText = gridLineValue.round().toString().replaceAllMapped(
-              new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-              (Match m) => "${m[1]},");
-        }
-
-        gridLineTextPainters.add(new TextPainter(
-            text: new TextSpan(
-                text: labelPrefix + gridLineText,
-                style: new TextStyle(
-                    color: gridLineLabelColor,
-                    fontSize: 10.0,
-                    fontWeight: FontWeight.bold)),
-            textDirection: TextDirection.ltr));
-        gridLineTextPainters[i].layout();
-      }
-
-      // Label volume line
-      maxVolumePainter = new TextPainter(
-          text: new TextSpan(
-              text: labelPrefix + numCommaParse(_maxVolume),
-              style: new TextStyle(
-                  color: gridLineLabelColor,
-                  fontSize: 10.0,
-                  fontWeight: FontWeight.bold)),
-          textDirection: TextDirection.ltr);
-      maxVolumePainter.layout();
-    }
+    // if (enableGridLines) {
+    //   double gridLineValue;
+    //   for (int i = 0; i < gridLineAmount; i++) {
+    //     // Label grid lines
+    //     gridLineValue = _max - (((_max - _min) / (gridLineAmount - 1)) * i);
+    //
+    //     String gridLineText;
+    //     if (gridLineValue < 1) {
+    //       gridLineText = gridLineValue.toStringAsPrecision(4);
+    //     } else if (gridLineValue < 999) {
+    //       gridLineText = gridLineValue.toStringAsFixed(2);
+    //     } else {
+    //       gridLineText = gridLineValue.round().toString().replaceAllMapped(
+    //           new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+    //           (Match m) => "${m[1]},");
+    //     }
+    //
+    //     gridLineTextPainters.add(new TextPainter(
+    //         text: new TextSpan(
+    //             text: labelPrefix + gridLineText,
+    //             style: new TextStyle(
+    //                 color: gridLineLabelColor,
+    //                 fontSize: 10.0,
+    //                 fontWeight: FontWeight.bold)),
+    //         textDirection: TextDirection.ltr));
+    //     gridLineTextPainters[i].layout();
+    //   }
+    //
+    //   // Label volume line
+    //   maxVolumePainter = new TextPainter(
+    //       text: new TextSpan(
+    //           text: labelPrefix + numCommaParse(_maxVolume),
+    //           style: new TextStyle(
+    //               color: gridLineLabelColor,
+    //               fontSize: 10.0,
+    //               fontWeight: FontWeight.bold)),
+    //       textDirection: TextDirection.ltr);
+    //   maxVolumePainter.layout();
+    // }
   }
 
   @override
@@ -306,29 +306,29 @@ class _OHLCVPainter extends CustomPainter {
     double width = size.width * widthProp;
     final double height = size.height * (1 - volumeProp);
 
-    if (enableGridLines) {
-      width = size.width - gridLineTextPainters[0].text.text.length * 6;
-      Paint gridPaint = new Paint()
-        ..color = gridLineColor
-        ..strokeWidth = gridLineWidth;
-
-      double gridLineDist = height / (gridLineAmount - 1);
-      double gridLineY;
-
-      // Draw grid lines
-      for (int i = 0; i < gridLineAmount; i++) {
-        gridLineY = (gridLineDist * i).round().toDouble();
-        canvas.drawLine(new Offset(0.0, gridLineY),
-            new Offset(width, gridLineY), gridPaint);
-
-        // Label grid lines
-        gridLineTextPainters[i]
-            .paint(canvas, new Offset(width + 2.0, gridLineY - 6.0));
-      }
-
-      // Label volume line
-      maxVolumePainter.paint(canvas, new Offset(0.0, gridLineY + 2.0));
-    }
+    // if (enableGridLines) {
+    //   width = size.width - gridLineTextPainters[0].text.text.length * 6;
+    //   Paint gridPaint = new Paint()
+    //     ..color = gridLineColor
+    //     ..strokeWidth = gridLineWidth;
+    //
+    //   double gridLineDist = height / (gridLineAmount - 1);
+    //   double gridLineY;
+    //
+    //   // Draw grid lines
+    //   for (int i = 0; i < gridLineAmount; i++) {
+    //     gridLineY = (gridLineDist * i).round().toDouble();
+    //     canvas.drawLine(new Offset(0.0, gridLineY),
+    //         new Offset(width, gridLineY), gridPaint);
+    //
+    //     // Label grid lines
+    //     gridLineTextPainters[i]
+    //         .paint(canvas, new Offset(width + 2.0, gridLineY - 6.0));
+    //   }
+    //
+    //   // Label volume line
+    //   maxVolumePainter.paint(canvas, new Offset(0.0, gridLineY + 2.0));
+    // }
 
     final double heightNormalizer = height / (_max - _min);
     final double rectWidth = barWidth ?? width / data.length * .7;
@@ -466,7 +466,7 @@ class _OHLCVPainter extends CustomPainter {
   bool shouldRepaint(_OHLCVPainter old) {
     return data != old.data ||
         lineWidth != old.lineWidth ||
-        enableGridLines != old.enableGridLines ||
+        // enableGridLines != old.enableGridLines ||
         gridLineColor != old.gridLineColor ||
         gridLineAmount != old.gridLineAmount ||
         gridLineWidth != old.gridLineWidth ||
